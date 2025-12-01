@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <h1>Monkey D Luffy</h1>
+            <p>Company Assistant</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <strong>Bot:</strong> Halo! Selamat datang di Netiquette Software. Saya siap membantu Anda mengetahui lebih lanjut tentang perusahaan kami, layanan yang kami tawarkan, dan bagaimana kami bisa membantu kebutuhan teknologi bisnis Anda. Silakan tanyakan apa saja!
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ketik pertanyaan Anda di sini..." 
+                autocomplete="off"
+            >
+            <button id="sendButton">Kirim</button>
+        </div>
+        
+        <div class="footer">
+            <small>Powered by DeepSeek API & ChromaDB</small>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
