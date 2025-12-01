@@ -24,7 +24,7 @@ def load_system_prompt():
                     return f.read()
     except:
         pass
-    return "Asisten Netiquette Software. Jawab ringkas.\n\nData:\n{context}"
+    return "Netiquette Software Assistant. Answer concisely.\n\nData:\n{context}"
 
 def simple_similarity(query, text):
     """Simple keyword matching"""

@@ -16,7 +16,7 @@ function addMessage(content, isUser = false) {
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
     messageContent.innerHTML = isUser 
-        ? `<strong>Anda:</strong> ${content}`
+        ? `<strong>You:</strong> ${content}`
         : `<strong>Bot:</strong> ${content}`;
     
     messageDiv.appendChild(messageContent);
@@ -34,7 +34,7 @@ function addLoadingIndicator() {
     
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
-    messageContent.innerHTML = '<strong>Bot:</strong> Sedang mengetik<span class="loading"></span>';
+    messageContent.innerHTML = '<strong>Bot:</strong> Typing<span class="loading"></span>';
     
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
@@ -92,7 +92,7 @@ async function sendMessage() {
     } catch (error) {
         console.error('Error:', error);
         removeLoadingIndicator();
-        addMessage('Maaf, terjadi kesalahan. Pastikan server berjalan dan DeepSeek API key sudah dikonfigurasi.');
+        addMessage('Sorry, an error occurred. Please ensure the server is running and DeepSeek API key is configured.');
     } finally {
         // Enable input
         userInput.disabled = false;
@@ -124,7 +124,7 @@ async function checkHealth() {
             console.warn('Warning: Knowledge base is empty!');
         }
     } catch (error) {
-        console.warn('Server tidak terhubung:', error);
+        console.warn('Server not connected:', error);
     }
 }
 
