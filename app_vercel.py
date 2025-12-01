@@ -130,48 +130,56 @@ def serve_static(path):
 @app.route('/api/chat', methods=['POST'])
 def chat():
     """Handle chat requests"""
-    data = request.json
-    user_message = data.get('message', '')
-    
-    if not user_message:
-        return jsonify({'error': 'Message is required'}), 400
-    
-    # Retrieve relevant context
-    context_chunks = query_knowledge_base(user_message, n_results=1)
-    context = "\n\n".join(context_chunks) if context_chunks else ""
-    
-    # Load system prompt
-    system_prompt = load_system_prompt()
-    
-    # Build messages
-    messages = [
-        {
-            "role": "system",
-            "content": system_prompt.format(context=context)
-        },
-        {
-            "role": "user",
-            "content": user_message
-        }
-    ]
-    
-    # Get response
-    if not os.getenv('DEEPSEEK_API_KEY'):
-        return jsonify({'error': 'API key not configured'}), 500
-    
-    response = call_deepseek_api(messages)
-    
-    return jsonify({
-        'response': response,
-        'context_used': len(context_chunks)
-    })
+    try:
+        data = request.json
+        user_message = data.get('message', '')
+        
+        if not user_message:
+            return jsonify({'error': 'Message is required'}), 400
+        
+        # Check API key first
+        api_key = os.getenv('DEEPSEEK_API_KEY')
+        if not api_key:
+            return jsonify({'response': 'API key is not configured in Vercel. Please set DEEPSEEK_API_KEY environment variable in Vercel Dashboard → Settings → Environment Variables.'}), 200
+        
+        # Retrieve relevant context
+        context_chunks = query_knowledge_base(user_message, n_results=1)
+        context = "\n\n".join(context_chunks) if context_chunks else ""
+        
+        # Load system prompt
+        system_prompt = load_system_prompt()
+        
+        # Build messages
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt.format(context=context)
+            },
+            {
+                "role": "user",
+                "content": user_message
+            }
+        ]
+        
+        # Get response
+        response = call_deepseek_api(messages)
+        
+        return jsonify({
+            'response': response,
+            'context_used': len(context_chunks)
+        })
+    except Exception as e:
+        return jsonify({'response': f'Server error: {str(e)}'}), 200
 
 @app.route('/api/health', methods=['GET'])
 def health():
     """Health check"""
+    api_key = os.getenv('DEEPSEEK_API_KEY')
     return jsonify({
         'status': 'healthy',
-        'documents_count': len(knowledge_base)
+        'documents_count': len(knowledge_base),
+        'api_key_configured': bool(api_key),
+        'knowledge_loaded': len(knowledge_base) > 0
     })
 
 # For Vercel
