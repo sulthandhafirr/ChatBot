@@ -10,10 +10,21 @@ knowledge_base = []
 def load_system_prompt():
     """Load system prompt"""
     try:
-        with open('system_prompt.txt', 'r', encoding='utf-8') as f:
-            return f.read()
+        # Try multiple possible paths for Vercel
+        import os
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        paths = [
+            os.path.join(base_dir, 'system_prompt.txt'),
+            'system_prompt.txt',
+            './system_prompt.txt'
+        ]
+        for path in paths:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    return f.read()
     except:
-        return "Asisten Netiquette Software. Jawab ringkas.\n\nData:\n{context}"
+        pass
+    return "Asisten Netiquette Software. Jawab ringkas.\n\nData:\n{context}"
 
 def simple_similarity(query, text):
     """Simple keyword matching"""
@@ -28,11 +39,44 @@ def load_knowledge_base():
     """Load knowledge from data.txt"""
     global knowledge_base
     try:
-        with open('knowledge_base/data.txt', 'r', encoding='utf-8') as f:
-            content = f.read()
-        chunks = content.split('\n\n')
-        knowledge_base = [chunk.strip()[:200] for chunk in chunks if chunk.strip()]
-        print(f"Loaded {len(knowledge_base)} chunks")
+        # Try multiple paths for Vercel
+        import os
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        paths = [
+            os.path.join(base_dir, 'knowledge_base', 'data.txt'),
+            'knowledge_base/data.txt',
+            './knowledge_base/data.txt'
+        ]
+        
+        content = None
+        for path in paths:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                break
+        
+        if content:
+            chunks = content.split('\n\n')
+            knowledge_base = [chunk.strip()[:200] for chunk in chunks if chunk.strip()]
+            print(f"Loaded {len(knowledge_base)} chunks")
+        else:
+            # Fallback: embed knowledge directly
+            knowledge_base = [
+                "Netiquette Software adalah perusahaan penyedia solusi bisnis berbasis cloud yang didirikan di Asia Tenggara dan telah beroperasi lebih dari 16 tahun sebagai layanan aplikasi bisnis cloud terb",
+                "Perusahaan ini berkembang di Singapura, Malaysia, Indonesia, Filipina, Hong Kong, dan Thailand. Netiquette membantu perusahaan dari skala kecil hingga menengah mengelola proses bisnis secara efisi",
+                "Visi utama Netiquette adalah memberikan solusi cloud premium dengan biaya terjangkau untuk UKM dan perusahaan yang sedang bertumbuh.",
+                "Layanan utama meliputi Accounting Management System untuk pencatatan transaksi, buku besar, rekonsiliasi bank, pengelolaan pajak, multi-mata uang, dan laporan keuangan real-time.",
+                "Inventory Management System mengelola stok terpusat, gudang multi-lokasi, pembelian, penjualan, supplier, kontrol produksi, picking, packing, batch, serial number, dan laporan pergerakan barang.",
+                "CRM membantu mengelola hubungan pelanggan, pipeline penjualan, follow-up, dan analisis performa tim sales untuk meningkatkan efektivitas penjualan.",
+                "Payroll dan HR mencakup penggajian otomatis, manajemen karyawan, cuti, klaim, lembur, struktur gaji, dan peraturan ketenagakerjaan lokal.",
+                "POS System mendukung transaksi kasir, integrasi inventori otomatis, diskon, multi-outlet, histori pelanggan, dan laporan penjualan terintegrasi dengan akuntansi.",
+                "Customized Cloud Solution menyediakan solusi khusus seperti penyesuaian workflow, integrasi API, koneksi e-commerce, marketplace, sistem produksi, manajemen proyek, dan otomatisasi bisnis.",
+                "Sistem berbasis cloud dapat diakses via browser, laptop, tablet, dan mobile dengan keamanan berlapis, enkripsi, backup reguler, dan pembaruan otomatis.",
+                "Model layanan meliputi free trial 30 hari, training, technical support, implementasi sistem, migrasi database, dan konsultasi bisnis.",
+                "Target pasar adalah retail, distribusi, perdagangan, manufaktur kecil, layanan profesional, dan perusahaan ekspansi di ASEAN dengan dukungan lokal di setiap negara.",
+                "Kontak: Email support@netiquette.com, Website www.netiquette.com, Telepon +65-1234-5678"
+            ]
+            print(f"Using embedded knowledge: {len(knowledge_base)} chunks")
     except Exception as e:
         print(f"Error loading knowledge: {e}")
         knowledge_base = []
