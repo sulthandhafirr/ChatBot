@@ -2,8 +2,11 @@ const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
 
-// API endpoint
-const API_URL = 'http://localhost:5000/api/chat';
+// API endpoint - automatically detect if running on localhost or production
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000'
+    : '';  // Use relative URL for production
+const API_URL = `${API_BASE}/api/chat`;
 
 // Add message to chat
 function addMessage(content, isUser = false) {
@@ -113,11 +116,15 @@ userInput.focus();
 // Check server health on load
 async function checkHealth() {
     try {
-        const response = await fetch('http://localhost:5000/api/health');
+        const healthUrl = `${API_BASE}/api/health`;
+        const response = await fetch(healthUrl);
         const data = await response.json();
         console.log('Server health:', data);
+        if (data.documents_count === 0) {
+            console.warn('Warning: Knowledge base is empty!');
+        }
     } catch (error) {
-        console.warn('Server tidak terhubung. Pastikan backend sudah berjalan.');
+        console.warn('Server tidak terhubung:', error);
     }
 }
 
